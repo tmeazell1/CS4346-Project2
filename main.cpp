@@ -19,15 +19,72 @@ struct Node{
 int main(){
     //lets represent x as player 1
     //and represent O as player 2
+    int eval1;
+    int eval2;
+    cout << "Enter evaluation function for player 1: " << endl;
+    cin >> eval1;
+    cout << "\n" << endl;
+    cout << "Enter evaluation function for player 1: " << endl;
+    cin >> eval2;
+    cout << "\n" << endl;
+
+    if(eval1 < 1 || eval1 > 4 || eval2 < 1 || eval2 >4)
+    {
+        cout << "Invalid evaluation functions" << endl;
+        return 0;
+    }
+
+    cout << "Starting simulation..." << endl;
+
+
     Path p;
     int depth =0;
+    int passT1, passT2, useT1, useT2;
+    switch(eval1) //TODO: implement actual max and min values for each EV
+    {
+        case 1:
+        passT1= -10;
+        useT1=10;
+        break;
+        case 2:
+        passT1= -10;
+        useT1=10;
+        break;
+        case 3:
+        passT1= -10;
+        useT1=10;
+        break;
+        case 4:
+        passT1= -10;
+        useT1=10;
+        break;
+    }
+    switch(eval2) //TODO: implement actual max and min values for each EV
+    {
+        case 1:
+        passT2= -10;
+        useT2=10;
+        break;
+        case 2:
+        passT2= -10;
+        useT2=10;
+        break;
+        case 3:
+        passT2= -10;
+        useT2=10;
+        break;
+        case 4:
+        passT2= -10;
+        useT2=10;
+        break;
+    }
     Node currentNode = newNode(-10, p);
     while (!gameOver(currentNode))
     {
         //btw i have no idea if this is how we're supposed to do it
-        currentNode = MINIMAXAB(currentNode, depth, 1, 1, 10, -10);
+        currentNode = MINIMAXAB(currentNode, depth, 1, eval1, useT1, passT1);
         printBoard(currentNode);
-        currentNode = MINIMAXAB(currentNode, depth, 2, 1, 10, -10);
+        currentNode = MINIMAXAB(currentNode, depth, 2, eval2, useT2, passT2);
         printBoard(currentNode);
         depth++;
     }
@@ -154,19 +211,19 @@ Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int 
         path.p.push_back(position);
         switch(EV){
         case 1:
-         return {EV1(position, player), p};
+         return {EV1(position, player), path};
          break;
         case 2:
-        return {EV2(position, player), p};
+        return {EV2(position, player), path};
         break;
         case 3:
-        return {EV3(position, player), p};
+        return {EV3(position, player), path};
         break;
         case 4:
-        return {EV4(position, player), p};
+        return {EV4(position, player), path};
         break;
         default:
-         return {EV1(position, player), p};
+         return {EV1(position, player), path};
          break;
         }
 
@@ -184,20 +241,37 @@ Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int 
         {
             //there are no moves to be made
             //return the same structure that would have been returned if DEEP-ENOUGH had returned TRUE.
-            Path p;
-            return {STATIC(position, player), p};
+            Path path;
+            path.p.push_back(position);
+            switch(EV){
+            case 1:
+             return {EV1(position, player), path};
+             break;
+            case 2:
+            return {EV2(position, player), path};
+            break;
+            case 3:
+            return {EV3(position, player), path};
+            break;
+            case 4:
+            return {EV4(position, player), path};
+            break;
+            default:
+             return {EV1(position, player), path};
+             break;
+        }
         }
         else{
             //go through each element
             Node RESULTSUCC;
             int NEWVALUE;
             for(Node SUCC : SUCCESSORS){
-                RESULTSUCC = MINIMAXAB(SUCC, depth+ 1, OPPOSITE(player), -passThresh, -useThresh);
+                RESULTSUCC = MINIMAXAB(SUCC, depth+ 1, OPPOSITE(player), EV, -passThresh, -useThresh);
                 NEWVALUE = -1 * RESULTSUCC.value;
                 if(NEWVALUE > passThresh){
                     //we have found a successor that is better than any we have examined so far
                     passThresh = NEWVALUE;
-                    bestPath = {}; //TODO: set BEST-PATH to the result of attaching SUCC to the front of RESULT-SUCC.p
+                    bestPath = {}; //TODO: set BEST-PATH to the result of attaching SUCC to the front of RESULT-SUCC.p.p
                 }
                 else{
                     //we should stop examining this branch. But both thresholds and
