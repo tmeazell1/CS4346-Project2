@@ -43,8 +43,8 @@ int main(){
     switch(eval1) //TODO: implement actual max and min values for each EV
     {
         case 1:
-        passT1= -10;
-        useT1=10;
+        passT1= -4;
+        useT1=4;
         break;
         case 2:
         passT1= -10;
@@ -62,8 +62,8 @@ int main(){
     switch(eval2) //TODO: implement actual max and min values for each EV
     {
         case 1:
-        passT2= -10;
-        useT2=10;
+        passT2= -4;
+        useT2=4;
         break;
         case 2:
         passT2= -10;
@@ -162,6 +162,27 @@ bool isWin(Node position, int player){
 
 //TODO: figure out what evaluation function means in the minimax algorithm.
 //We need 4 different EVs apparently lol
+/*
+    Potential evaluation function ideas: (from chatgpt lowk)
+    Center Control:
+        Assign a higher value if X controls the center of the board, and a lower value if O controls the center.
+        This function evaluates the importance of controlling the center as it provides more opportunities for creating winning combinations.
+        For example, if X occupies the center cell, the function could return a positive value; if O occupies the center, it could return a negative value.
+
+    Corner Control:
+        Assign values based on how many corners each player controls.
+        Corners are strategic positions in Tic-Tac-Toe as they give more control over the board.
+        You could give a higher value if X controls more corners and a lower value if O controls more corners.
+        For instance, if X occupies more corners than O, the function could return a positive value; if O controls more corners, it could return a negative value.
+
+    Potential Forks:
+        Evaluate potential fork opportunities for each player.
+        A fork is a situation where a player can win on their next move regardless of the opponent's move.
+        Look for configurations where placing a mark could potentially lead to two possible winning paths.
+        Assign a higher value if X has more potential forks and a lower value if O has more potential forks.
+        For instance, if X has more potential fork opportunities, the function could return a positive value; if O has more, it could return a negative value.
+        
+        */
 int EV1(Node position, int player){
     //TODO: implement the EV described in class
 }
@@ -271,7 +292,8 @@ Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int 
                 if(NEWVALUE > passThresh){
                     //we have found a successor that is better than any we have examined so far
                     passThresh = NEWVALUE;
-                    bestPath = {}; //TODO: set BEST-PATH to the result of attaching SUCC to the front of RESULT-SUCC.p.p
+                    bestPath.p = RESULTSUCC.p.p; //TODO: set BEST-PATH to the result of attaching SUCC to the front of RESULT-SUCC.p.p
+                    bestPath.p.push_back(SUCC);
                 }
                 else{
                     //we should stop examining this branch. But both thresholds and
