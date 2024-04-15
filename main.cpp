@@ -6,7 +6,7 @@
 using namespace std;
 
 struct Path{
-
+    vector<Node> p;
 };
 
 struct Node{
@@ -25,9 +25,9 @@ int main(){
     while (!gameOver(currentNode))
     {
         //btw i have no idea if this is how we're supposed to do it
-        currentNode = MINIMAXAB(currentNode, depth, 1, 10, -10);
+        currentNode = MINIMAXAB(currentNode, depth, 1, 1, 10, -10);
         printBoard(currentNode);
-        currentNode = MINIMAXAB(currentNode, depth, 2, 10, -10);
+        currentNode = MINIMAXAB(currentNode, depth, 2, 1, 10, -10);
         printBoard(currentNode);
         depth++;
     }
@@ -105,17 +105,32 @@ bool isWin(Node position, int player){
 
 //TODO: figure out what evaluation function means in the minimax algorithm.
 //We need 4 different EVs apparently lol
-int STATIC(Node position, int player){ //returns the win / lose / draw. ie win = 10, loss =-10, draw =0
-    if (isWin(position, player)){
-        return 10;
-    }
-    else if (isWin(position, OPPOSITE(player))){
-        return -10;
-    }
-    else{
-        return 0;
-    }
+int EV1(Node position, int player){
+    //TODO: implement the EV described in class
 }
+int EV2(Node position, int player){
+    //TODO: implement another EV
+}
+int EV3(Node position, int player){
+    //TODO: implement another EV
+}
+int EV4(Node position, int player){
+    //TODO: implement another EV
+}
+
+//we dont need this?
+
+// int STATIC(Node position, int player){ //returns the win / lose / draw. ie win = 10, loss =-10, draw =0
+//     if (isWin(position, player)){
+//         return 10;
+//     }
+//     else if (isWin(position, OPPOSITE(player))){
+//         return -10;
+//     }
+//     else{
+//         return 0;
+//     }
+// }
 
 int OPPOSITE(int player){
     //return opposite player
@@ -132,11 +147,30 @@ vector<Node> MOVEGEN(Node position, int player)
     //that the given player could make. ie if player =2, fill in each open square with a 2 and return that list of nodes
 }
 
-Node MINIMAXAB(Node position, int depth, int player, int useThresh, int passThresh){
+Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int passThresh){
     if (DEEPENOUGH(position, depth)){ 
         //then return the structure
-        Path p;
-        return {STATIC(position, player), p};
+        Path path;
+        path.p.push_back(position);
+        switch(EV){
+        case 1:
+         return {EV1(position, player), p};
+         break;
+        case 2:
+        return {EV2(position, player), p};
+        break;
+        case 3:
+        return {EV3(position, player), p};
+        break;
+        case 4:
+        return {EV4(position, player), p};
+        break;
+        default:
+         return {EV1(position, player), p};
+         break;
+        }
+
+        //return {STATIC(position, player), p};
         // int VALUE = STATIC(position, player);
         // //PATH=nil
     }
