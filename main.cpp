@@ -149,7 +149,63 @@ bool gameOver(Node n){
         */
 int EV1(Node position, int player){
     //TODO: implement the EV described in class
-    return 1;
+    int playerRows = 0;
+    int oppositePlayerRows = 0;
+
+    // Check rows
+    for (int i = 0; i < 3; ++i) {
+        bool playerPossible = true;
+        bool oppositePlayerPossible = true;
+        for (int j = 0; j < 3; ++j) {
+            if (position.gameBoard[i][j] == player) {
+                oppositePlayerPossible = false;
+            } else if (position.gameBoard[i][j] != 0) {
+                playerPossible = false;
+            }
+        }
+        if (playerPossible) playerRows++;
+        if (oppositePlayerPossible) oppositePlayerRows++;
+    }
+
+    // Check columns
+    for (int j = 0; j < 3; ++j) {
+        bool playerPossible = true;
+        bool oppositePlayerPossible = true;
+        for (int i = 0; i < 3; ++i) {
+            if (position.gameBoard[i][j] == player) {
+                oppositePlayerPossible = false;
+            } else if (position.gameBoard[i][j] != 0) {
+                playerPossible = false;
+            }
+        }
+        if (playerPossible) playerRows++;
+        if (oppositePlayerPossible) oppositePlayerRows++;
+    }
+
+    // Check diagonals
+    bool playerDiagonalPossible1 = true;
+    bool oppositePlayerDiagonalPossible1 = true;
+    bool playerDiagonalPossible2 = true;
+    bool oppositePlayerDiagonalPossible2 = true;
+    for (int i = 0; i < 3; ++i) {
+        if (position.gameBoard[i][i] == player) {
+            oppositePlayerDiagonalPossible1 = false;
+        } else if (position.gameBoard[i][i] != 0) {
+            playerDiagonalPossible1 = false;
+        }
+        if (position.gameBoard[i][2 - i] == player) {
+            oppositePlayerDiagonalPossible2 = false;
+        } else if (position.gameBoard[i][2 - i] != 0) {
+            playerDiagonalPossible2 = false;
+        }
+    }
+    if (playerDiagonalPossible1) playerRows++;
+    if (oppositePlayerDiagonalPossible1) oppositePlayerRows++;
+    if (playerDiagonalPossible2) playerRows++;
+    if (oppositePlayerDiagonalPossible2) oppositePlayerRows++;
+
+    // Return the difference
+    return playerRows - oppositePlayerRows;
 }
 int EV2(Node position, int player){
     //TODO: implement another EV
@@ -289,11 +345,11 @@ Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int 
                     //we should stop examining this branch. But both thresholds and
                     //values have been inverted. So, if Pass-Thresh>= Use Thresh, then return
                     //immediately with the value
-                    Node n = newNode(passThresh, bestPath, position.gameBoard);
+                    Node n = newNode(passThresh, bestPath, SUCC.gameBoard);
                     return n;
                 }
             }
-            Node n = newNode(passThresh, bestPath, position.gameBoard);
+            Node n = newNode(passThresh, bestPath, RESULTSUCC.gameBoard);
             return n;
         }
     }
