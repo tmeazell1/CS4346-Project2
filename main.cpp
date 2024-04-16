@@ -30,6 +30,9 @@ int OPPOSITE(int player);
 vector<Node> MOVEGEN(Node position, int player);
 Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int passThresh);
 
+//globals
+int nodesGen =0;
+
 Node newNode(int value, vector<Node> p){
     Node newNode;
     newNode.value = value;
@@ -145,6 +148,10 @@ bool gameOver(Node n){
         Look for configurations where placing a mark could potentially lead to two possible winning paths.
         Assign a higher value if X has more potential forks and a lower value if O has more potential forks.
         For instance, if X has more potential fork opportunities, the function could return a positive value; if O has more, it could return a negative value.
+
+    two Adjacent:
+        checks each row and column for when a player has 2 adjacent marks, aka there is about to be a win. +1 for player has two adjacentm,
+        -1 for opponent has two adjacent
         
         */
 int EV1(Node position, int player){
@@ -237,6 +244,7 @@ vector<Node> MOVEGEN(Node position, int player)
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
             if (position.gameBoard[i][j] == 0) { //if there is an empty space
+                nodesGen++;
                 Node succ = position; //make a new node, equivalent to position
                 succ.gameBoard[i][j] = player; //fill this empty position with player's value
                 successors.push_back(succ); //add this new node to our list
@@ -427,5 +435,6 @@ int main(){
         printBoard(currentNode);
         depth++;
     }
+    cout << "Game over! " << nodesGen << " nodes were generated." << endl;
     return 0;
 }
