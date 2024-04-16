@@ -5,19 +5,19 @@
 
 using namespace std;
 
-struct Path{
-    vector<Node> p;
-};
-
 struct Node{
     //node
     int value;
-    Path p;
+    vector<Node> path;
     int gameBoard[3][3];
 };
 
+// struct Path{
+
+// };
+
 // Prototype functions
-Node newNode(int value, Path p);
+Node newNode(int value, vector<Node> p);
 bool DEEPENOUGH(Node position, int depth);
 bool isWin(Node position, int player);
 void printBoard(Node n);
@@ -30,15 +30,28 @@ int OPPOSITE(int player);
 vector<Node> MOVEGEN(Node position, int player);
 Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int passThresh);
 
-Node newNode(int value, Path p){
+Node newNode(int value, vector<Node> p){
     Node newNode;
     newNode.value = value;
-    newNode.p = p;
+    newNode.path = p;
     for (int i=0; i<3; i++){
         for (int j =0; j<3; j++){
             newNode.gameBoard[i][j]=0; //set the gameboard to be equal to all 0s
         }
     }
+    return newNode;
+}
+
+Node newNode(int value, vector<Node> p, int gb[3][3]){
+    Node newNode;
+    newNode.value = value;
+    newNode.path = p;
+    for (int i=0; i<3; i++){
+        for (int j =0; j<3; j++){
+            newNode.gameBoard[i][j]= gb[i][j]; //set the gameboard to be equal to gb
+        }
+    }
+    return newNode;
 }
 
 bool DEEPENOUGH(Node position, int depth){
@@ -106,6 +119,7 @@ bool gameOver(Node n){
                 isFilled = false;
             }
         }
+    }
     return isFilled;
 }
 
@@ -178,54 +192,84 @@ vector<Node> MOVEGEN(Node position, int player)
 Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int passThresh){
     if (DEEPENOUGH(position, depth)){ 
         //then return the structure
-        Path path;
-        path.p.push_back(position);
+        vector<Node> path;
+        path.push_back(position);
         switch(EV){
         case 1:
-        return {EV1(position, player), path};
+        {
+        Node n = newNode(EV1(position, player), path, position.gameBoard);
+        return n;
         break;
+        }
         case 2:
-        return {EV2(position, player), path};
+        {
+        Node n = newNode(EV2(position, player), path, position.gameBoard);
+        return n;
         break;
+        }
         case 3:
-        return {EV3(position, player), path};
+        {
+        Node n = newNode(EV3(position, player), path, position.gameBoard);
+        return n;
         break;
+        }
         case 4:
-        return {EV4(position, player), path};
+        {
+        Node n = newNode(EV4(position, player), path, position.gameBoard);
+        return n;
         break;
+        }
         default:
-         return {EV1(position, player), path};
-         break;
+        {
+        Node n = newNode(EV1(position, player), path, position.gameBoard);
+        return n;
+        break;
+        }
         }
     }
     else
     {
         //generate one more ply of the tree
         vector<Node> SUCCESSORS = MOVEGEN(position, player);
-        Path bestPath;
+        vector<Node> bestPath;
         if(SUCCESSORS.empty())
         {
             //there are no moves to be made
             //return the same structure that would have been returned if DEEP-ENOUGH had returned TRUE.
-            Path path;
-            path.p.push_back(position);
+            vector<Node> path;
+            path.push_back(position);
             switch(EV){
             case 1:
-            return {EV1(position, player), path};
+            {
+            Node n = newNode(EV1(position, player), path, position.gameBoard);
+            return n;
             break;
+            }
             case 2:
-            return {EV2(position, player), path};
+            {
+            Node n = newNode(EV2(position, player), path, position.gameBoard);
+            return n;
             break;
+            }
             case 3:
-            return {EV3(position, player), path};
+            {
+            Node n = newNode(EV3(position, player), path, position.gameBoard);
+            return n;
             break;
+            }
             case 4:
-            return {EV4(position, player), path};
+            {
+            Node n = newNode(EV4(position, player), path, position.gameBoard);
+            return n;
             break;
+            }
             default:
-            return {EV1(position, player), path};
+            {
+            Node n = newNode(EV1(position, player), path, position.gameBoard);
+            return n;
             break;
-        }
+            }
+            }
         }
         else{
             //go through each element
@@ -237,20 +281,21 @@ Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int 
                 if(NEWVALUE > passThresh){
                     //we have found a successor that is better than any we have examined so far
                     passThresh = NEWVALUE;
-                    bestPath.p = RESULTSUCC.p.p; //TODO: set BEST-PATH to the result of attaching SUCC to the front of RESULT-SUCC.p.p
-                    bestPath.p.push_back(SUCC);
+                    bestPath = RESULTSUCC.path; //TODO: set BEST-PATH to the result of attaching SUCC to the front of RESULT-SUCC.p.p
+                    bestPath.push_back(SUCC);
                 }
                 else{
                     //we should stop examining this branch. But both thresholds and
                     //values have been inverted. So, if Pass-Thresh>= Use Thresh, then return
                     //immediately with the value
-                    return{passThresh, bestPath};
+                    Node n = newNode(passThresh, bestPath, position.gameBoard);
+                    return n;
                 }
             }
-            return{passThresh, bestPath};
+            Node n = newNode(passThresh, bestPath, position.gameBoard);
+            return n;
         }
     }
-    //return{passThresh, bestPath};
 }
 
 int main(){
@@ -261,7 +306,7 @@ int main(){
     cout << "Enter evaluation function for player 1: " << endl;
     cin >> eval1;
     cout << "\n" << endl;
-    cout << "Enter evaluation function for player 1: " << endl;
+    cout << "Enter evaluation function for player 2: " << endl;
     cin >> eval2;
     cout << "\n" << endl;
 
@@ -274,7 +319,7 @@ int main(){
     cout << "Starting simulation..." << endl;
 
 
-    Path p;
+    vector<Node> p;
     int depth =0;
     int passT1, passT2, useT1, useT2;
     switch(eval1) //TODO: implement actual max and min values for each EV
