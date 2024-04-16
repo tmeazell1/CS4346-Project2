@@ -16,6 +16,243 @@ struct Node{
     int gameBoard[3][3];
 };
 
+// Prototype functions
+Node newNode(int value, Path p);
+bool DEEPENOUGH(Node position, int depth);
+bool isWin(Node position, int player);
+void printBoard(Node n);
+bool gameOver(Node n);
+int EV1(Node position, int player);
+int EV2(Node position, int player);
+int EV3(Node position, int player);
+int EV4(Node position, int player);
+int OPPOSITE(int player);
+vector<Node> MOVEGEN(Node position, int player);
+Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int passThresh);
+
+Node newNode(int value, Path p){
+    Node newNode;
+    newNode.value = value;
+    newNode.p = p;
+    for (int i=0; i<3; i++){
+        for (int j =0; j<3; j++){
+            newNode.gameBoard[i][j]=0; //set the gameboard to be equal to all 0s
+        }
+    }
+}
+
+bool DEEPENOUGH(Node position, int depth){
+    if (depth > 4)//each move is .5 depth, so 9 moves = 4.5, the game is over
+        return true;
+    else if (isWin(position, 1) || isWin(position, 2))
+        return true;
+    else
+        return false;
+
+}
+
+bool isWin(Node position, int player){
+    //return true if the node represents a winning position for that player
+    // Check rows
+    for (int i = 0; i < 3; ++i) {
+        if (position.gameBoard[i][0] == player && position.gameBoard[i][1] == player && position.gameBoard[i][2] == player) {
+            return true;
+        }
+    }
+    // Check columns
+    for (int j = 0; j < 3; ++j) {
+        if (position.gameBoard[0][j] == player && position.gameBoard[1][j] == player && position.gameBoard[2][j] == player) {
+            return true;
+        }
+    }
+    // Check diagonals
+    if ((position.gameBoard[0][0] == player && position.gameBoard[1][1] == player && position.gameBoard[2][2] == player) ||
+        (position.gameBoard[0][2] == player && position.gameBoard[1][1] == player && position.gameBoard[2][0] == player)) {
+        return true;
+    }
+    
+    return false; // If no win condition is met
+}
+
+
+void printBoard(Node n){ //simply prints the node's configuration
+    std::cout << "--|---|---|---|\n";
+    for (int i = 0; i < 3; ++i) {
+        std::cout << i << " | ";
+        for (int j = 0; j < 3; ++j) {
+            if (n.gameBoard[i][j] == 1) {
+                std::cout << "X | ";
+            } else if (n.gameBoard[i][j] == 2) {
+                std::cout << "O | ";
+            } else {
+                std::cout << "  | ";
+            }
+        }
+        std::cout << "\n";
+        std::cout << "--|---|---|---|\n";
+    }
+}
+
+bool gameOver(Node n){
+    //return true if the game is over ie all nodes are filled
+    //or if isWin(n, 1) or isWin(n, 2)
+    if (isWin(n,1) || isWin(n,2)){
+        return true;
+    }
+    bool isFilled = true; //bool tracks if board is completely filled
+     for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (n.gameBoard[i][j] == 0) {
+                isFilled = false;
+            }
+        }
+    return isFilled;
+}
+
+//TODO: figure out what evaluation function means in the minimax algorithm.
+//We need 4 different EVs apparently lol
+/*
+    Potential evaluation function ideas: (from chatgpt lowk)
+    Center Control:
+        Assign a higher value if X controls the center of the board, and a lower value if O controls the center.
+        This function evaluates the importance of controlling the center as it provides more opportunities for creating winning combinations.
+        For example, if X occupies the center cell, the function could return a positive value; if O occupies the center, it could return a negative value.
+
+    Corner Control:
+        Assign values based on how many corners each player controls.
+        Corners are strategic positions in Tic-Tac-Toe as they give more control over the board.
+        You could give a higher value if X controls more corners and a lower value if O controls more corners.
+        For instance, if X occupies more corners than O, the function could return a positive value; if O controls more corners, it could return a negative value.
+
+    Potential Forks:
+        Evaluate potential fork opportunities for each player.
+        A fork is a situation where a player can win on their next move regardless of the opponent's move.
+        Look for configurations where placing a mark could potentially lead to two possible winning paths.
+        Assign a higher value if X has more potential forks and a lower value if O has more potential forks.
+        For instance, if X has more potential fork opportunities, the function could return a positive value; if O has more, it could return a negative value.
+        
+        */
+int EV1(Node position, int player){
+    //TODO: implement the EV described in class
+    return 1;
+}
+int EV2(Node position, int player){
+    //TODO: implement another EV
+    return 1;
+}
+int EV3(Node position, int player){
+    //TODO: implement another EV
+    return 1;
+}
+int EV4(Node position, int player){
+    //TODO: implement another EV
+    return 1;
+}
+
+int OPPOSITE(int player){
+    //return opposite player
+    if (player == 1)
+        return 2;
+    else
+        return 1;
+}
+
+vector<Node> MOVEGEN(Node position, int player)
+{
+    //return list of successors
+    //using position.Gameboard, return a vector of nodes that contains every possible move
+    //that the given player could make. ie if player =2, fill in each open square with a 2 and return that list of nodes
+    vector<Node> successors; //vector to hold each possible move
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (position.gameBoard[i][j] == 0) { //if there is an empty space
+                Node succ = position; //make a new node, equivalent to position
+                succ.gameBoard[i][j] = player; //fill this empty position with player's value
+                successors.push_back(succ); //add this new node to our list
+            }
+        }
+    }
+    return successors;
+}
+
+Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int passThresh){
+    if (DEEPENOUGH(position, depth)){ 
+        //then return the structure
+        Path path;
+        path.p.push_back(position);
+        switch(EV){
+        case 1:
+        return {EV1(position, player), path};
+        break;
+        case 2:
+        return {EV2(position, player), path};
+        break;
+        case 3:
+        return {EV3(position, player), path};
+        break;
+        case 4:
+        return {EV4(position, player), path};
+        break;
+        default:
+         return {EV1(position, player), path};
+         break;
+        }
+    }
+    else
+    {
+        //generate one more ply of the tree
+        vector<Node> SUCCESSORS = MOVEGEN(position, player);
+        Path bestPath;
+        if(SUCCESSORS.empty())
+        {
+            //there are no moves to be made
+            //return the same structure that would have been returned if DEEP-ENOUGH had returned TRUE.
+            Path path;
+            path.p.push_back(position);
+            switch(EV){
+            case 1:
+            return {EV1(position, player), path};
+            break;
+            case 2:
+            return {EV2(position, player), path};
+            break;
+            case 3:
+            return {EV3(position, player), path};
+            break;
+            case 4:
+            return {EV4(position, player), path};
+            break;
+            default:
+            return {EV1(position, player), path};
+            break;
+        }
+        }
+        else{
+            //go through each element
+            Node RESULTSUCC;
+            int NEWVALUE;
+            for(Node SUCC : SUCCESSORS){
+                RESULTSUCC = MINIMAXAB(SUCC, depth+ 1, OPPOSITE(player), EV, -passThresh, -useThresh);
+                NEWVALUE = -1 * RESULTSUCC.value;
+                if(NEWVALUE > passThresh){
+                    //we have found a successor that is better than any we have examined so far
+                    passThresh = NEWVALUE;
+                    bestPath.p = RESULTSUCC.p.p; //TODO: set BEST-PATH to the result of attaching SUCC to the front of RESULT-SUCC.p.p
+                    bestPath.p.push_back(SUCC);
+                }
+                else{
+                    //we should stop examining this branch. But both thresholds and
+                    //values have been inverted. So, if Pass-Thresh>= Use Thresh, then return
+                    //immediately with the value
+                    return{passThresh, bestPath};
+                }
+            }
+            return{passThresh, bestPath};
+        }
+    }
+    //return{passThresh, bestPath};
+}
+
 int main(){
     //lets represent x as player 1
     //and represent O as player 2
@@ -79,7 +316,7 @@ int main(){
         break;
     }
     Node currentNode = newNode(-10, p);
-    while (!gameOver(currentNode))
+    while(!gameOver(currentNode))
     {
         //btw i have no idea if this is how we're supposed to do it
         currentNode = MINIMAXAB(currentNode, depth, 1, eval1, useT1, passT1);
@@ -89,241 +326,4 @@ int main(){
         depth++;
     }
     return 0;
-}
-
-Node newNode(int value, Path p){
-    Node newNode;
-    newNode.value = value;
-    newNode.p = p;
-    for (int i=0; i<3; i++){
-        for (int j =0; j<3; j++){
-            newNode.gameBoard[i][j]=0; //set the gameboard to be equal to all 0s
-        }
-    }
-}
-
-bool DEEPENOUGH(Node position, int depth){
-    if (depth > 4)//each move is .5 depth, so 9 moves = 4.5, the game is over
-        return true;
-    else if (isWin(position, 1) || isWin(position, 2))
-        return true;
-    else
-        return false;
-
-}
-
-
-void printBoard(Node n){ //simply prints the node's configuration
-    std::cout << "--|---|---|---|\n";
-    for (int i = 0; i < 3; ++i) {
-        std::cout << i << " | ";
-        for (int j = 0; j < 3; ++j) {
-            if (n.gameBoard[i][j] == 1) {
-                std::cout << "X | ";
-            } else if (n.gameBoard[i][j] == 2) {
-                std::cout << "O | ";
-            } else {
-                std::cout << "  | ";
-            }
-        }
-        std::cout << "\n";
-        std::cout << "--|---|---|---|\n";
-    }
-}
-
-bool gameOver(Node n){
-    //return true if the game is over ie all nodes are filled
-    //or if isWin(n, 1) or isWin(n, 2)
-    if (isWin(n,1) || isWin(n,2)){
-        return true;
-    }
-    bool isFilled = true; //bool tracks if board is completely filled
-     for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            if (n.gameBoard[i][j] == 0) {
-                isFilled = false;
-            }
-        }
-    return isFilled;
-}
-
-bool isWin(Node position, int player){
-    //return true if the node represents a winning position for that player
-    // Check rows
-    for (int i = 0; i < 3; ++i) {
-        if (position.gameBoard[i][0] == player && position.gameBoard[i][1] == player && position.gameBoard[i][2] == player) {
-            return true;
-        }
-    }
-    // Check columns
-    for (int j = 0; j < 3; ++j) {
-        if (position.gameBoard[0][j] == player && position.gameBoard[1][j] == player && position.gameBoard[2][j] == player) {
-            return true;
-        }
-    }
-    // Check diagonals
-    if ((position.gameBoard[0][0] == player && position.gameBoard[1][1] == player && position.gameBoard[2][2] == player) ||
-        (position.gameBoard[0][2] == player && position.gameBoard[1][1] == player && position.gameBoard[2][0] == player)) {
-        return true;
-    }
-    
-    return false; // If no win condition is met
-}
-
-//TODO: figure out what evaluation function means in the minimax algorithm.
-//We need 4 different EVs apparently lol
-/*
-    Potential evaluation function ideas: (from chatgpt lowk)
-    Center Control:
-        Assign a higher value if X controls the center of the board, and a lower value if O controls the center.
-        This function evaluates the importance of controlling the center as it provides more opportunities for creating winning combinations.
-        For example, if X occupies the center cell, the function could return a positive value; if O occupies the center, it could return a negative value.
-
-    Corner Control:
-        Assign values based on how many corners each player controls.
-        Corners are strategic positions in Tic-Tac-Toe as they give more control over the board.
-        You could give a higher value if X controls more corners and a lower value if O controls more corners.
-        For instance, if X occupies more corners than O, the function could return a positive value; if O controls more corners, it could return a negative value.
-
-    Potential Forks:
-        Evaluate potential fork opportunities for each player.
-        A fork is a situation where a player can win on their next move regardless of the opponent's move.
-        Look for configurations where placing a mark could potentially lead to two possible winning paths.
-        Assign a higher value if X has more potential forks and a lower value if O has more potential forks.
-        For instance, if X has more potential fork opportunities, the function could return a positive value; if O has more, it could return a negative value.
-        
-        */
-int EV1(Node position, int player){
-    //TODO: implement the EV described in class
-    return 1;
-}
-int EV2(Node position, int player){
-    //TODO: implement another EV
-    return 1;
-}
-int EV3(Node position, int player){
-    //TODO: implement another EV
-    return 1;
-}
-int EV4(Node position, int player){
-    //TODO: implement another EV
-    return 1;
-}
-
-//we dont need this?
-
-// int STATIC(Node position, int player){ //returns the win / lose / draw. ie win = 10, loss =-10, draw =0
-//     if (isWin(position, player)){
-//         return 10;
-//     }
-//     else if (isWin(position, OPPOSITE(player))){
-//         return -10;
-//     }
-//     else{
-//         return 0;
-//     }
-// }
-
-int OPPOSITE(int player){
-    //return opposite player
-    if (player == 1)
-        return 2;
-    else
-        return 1;
-}
-
-vector<Node> MOVEGEN(Node position, int player)
-{
-    //return list of successors
-    //TODO: using position.Gameboard, return a vector of nodes that contains every possible move
-    //that the given player could make. ie if player =2, fill in each open square with a 2 and return that list of nodes
-    vector<Node> successors; //vector to hold each possible move
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            if (position.gameBoard[i][j] == 0) { //if there is an empty space
-                Node succ = position; //make a new node, equivalent to position
-                succ.gameBoard[i][j] = player; //fill this empty position with player's value
-                successors.push_back(succ); //add this new node to our list
-            }
-        }
-    return successors;
-
-}
-
-Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int passThresh){
-    if (DEEPENOUGH(position, depth)){ 
-        //then return the structure
-        Path path;
-        path.p.push_back(position);
-        switch(EV){
-        case 1:
-        return {EV1(position, player), path};
-        break;
-        case 2:
-        return {EV2(position, player), path};
-        break;
-        case 3:
-        return {EV3(position, player), path};
-        break;
-        case 4:
-        return {EV4(position, player), path};
-        break;
-        default:
-         return {EV1(position, player), path};
-         break;
-        }
-    }
-    else
-    {
-        //generate one more ply of the tree
-        vector<Node> SUCCESSORS;
-        SUCCESSORS = MOVEGEN(position, player);
-        Path bestPath;
-        if(SUCCESSORS.empty())
-        {
-            //there are no moves to be made
-            //return the same structure that would have been returned if DEEP-ENOUGH had returned TRUE.
-            Path path;
-            path.p.push_back(position);
-            switch(EV){
-            case 1:
-            return {EV1(position, player), path};
-            break;
-            case 2:
-            return {EV2(position, player), path};
-            break;
-            case 3:
-            return {EV3(position, player), path};
-            break;
-            case 4:
-            return {EV4(position, player), path};
-            break;
-            default:
-            return {EV1(position, player), path};
-            break;
-        }
-        }
-        else{
-            //go through each element
-            Node RESULTSUCC;
-            int NEWVALUE;
-            for(Node SUCC : SUCCESSORS){
-                RESULTSUCC = MINIMAXAB(SUCC, depth+ 1, OPPOSITE(player), EV, -passThresh, -useThresh);
-                NEWVALUE = -1 * RESULTSUCC.value;
-                if(NEWVALUE > passThresh){
-                    //we have found a successor that is better than any we have examined so far
-                    passThresh = NEWVALUE;
-                    bestPath.p = RESULTSUCC.p.p; //TODO: set BEST-PATH to the result of attaching SUCC to the front of RESULT-SUCC.p.p
-                    bestPath.p.push_back(SUCC);
-                }
-                else{
-                    //we should stop examining this branch. But both thresholds and
-                    //values have been inverted. So, if Pass-Thresh>= Use Thresh, then return
-                    //immediately with the value
-                    return{passThresh, bestPath};
-                }
-            }
-            return{passThresh, bestPath};
-        }
-    }
 }
