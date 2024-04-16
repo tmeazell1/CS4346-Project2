@@ -195,15 +195,19 @@ bool isWin(Node position, int player){
         */
 int EV1(Node position, int player){
     //TODO: implement the EV described in class
+    return 1;
 }
 int EV2(Node position, int player){
     //TODO: implement another EV
+    return 1;
 }
 int EV3(Node position, int player){
     //TODO: implement another EV
+    return 1;
 }
 int EV4(Node position, int player){
     //TODO: implement another EV
+    return 1;
 }
 
 //we dont need this?
@@ -233,6 +237,17 @@ vector<Node> MOVEGEN(Node position, int player)
     //return list of successors
     //TODO: using position.Gameboard, return a vector of nodes that contains every possible move
     //that the given player could make. ie if player =2, fill in each open square with a 2 and return that list of nodes
+    vector<Node> successors; //vector to hold each possible move
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (position.gameBoard[i][j] == 0) { //if there is an empty space
+                Node succ = position; //make a new node, equivalent to position
+                succ.gameBoard[i][j] = player; //fill this empty position with player's value
+                successors.push_back(succ); //add this new node to our list
+            }
+        }
+    return successors;
+
 }
 
 Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int passThresh){
@@ -242,8 +257,8 @@ Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int 
         path.p.push_back(position);
         switch(EV){
         case 1:
-         return {EV1(position, player), path};
-         break;
+        return {EV1(position, player), path};
+        break;
         case 2:
         return {EV2(position, player), path};
         break;
@@ -257,10 +272,6 @@ Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int 
          return {EV1(position, player), path};
          break;
         }
-
-        //return {STATIC(position, player), p};
-        // int VALUE = STATIC(position, player);
-        // //PATH=nil
     }
     else
     {
@@ -276,8 +287,8 @@ Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int 
             path.p.push_back(position);
             switch(EV){
             case 1:
-             return {EV1(position, player), path};
-             break;
+            return {EV1(position, player), path};
+            break;
             case 2:
             return {EV2(position, player), path};
             break;
@@ -288,8 +299,8 @@ Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int 
             return {EV4(position, player), path};
             break;
             default:
-             return {EV1(position, player), path};
-             break;
+            return {EV1(position, player), path};
+            break;
         }
         }
         else{
