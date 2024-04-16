@@ -89,9 +89,9 @@ bool isWin(Node position, int player){
 
 
 void printBoard(Node n){ //simply prints the node's configuration
-    std::cout << "--|---|---|---|\n";
+    std::cout << "|---|---|---|\n";
     for (int i = 0; i < 3; ++i) {
-        std::cout << i << " | ";
+        std::cout << "| ";
         for (int j = 0; j < 3; ++j) {
             if (n.gameBoard[i][j] == 1) {
                 std::cout << "X | ";
@@ -102,8 +102,9 @@ void printBoard(Node n){ //simply prints the node's configuration
             }
         }
         std::cout << "\n";
-        std::cout << "--|---|---|---|\n";
+        std::cout << "|---|---|---|\n";
     }
+    cout << "\n\n";
 }
 
 bool gameOver(Node n){
