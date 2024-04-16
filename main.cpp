@@ -132,9 +132,19 @@ void printBoard(Node n){ //simply prints the node's configuration
 }
 
 bool gameOver(Node n){
-    //TODO: return true if the game is over ie all nodes are filled
+    //return true if the game is over ie all nodes are filled
     //or if isWin(n, 1) or isWin(n, 2)
-    return false;
+    if (isWin(n,1) || isWin(n,2)){
+        return true;
+    }
+    bool isFilled = true; //bool tracks if board is completely filled
+     for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (n.gameBoard[i][j] == 0) {
+                isFilled = false;
+            }
+        }
+    return isFilled;
 }
 
 bool isWin(Node position, int player){
