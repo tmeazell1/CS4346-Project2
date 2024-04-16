@@ -32,6 +32,7 @@ Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int 
 
 //globals
 int nodesGen =0;
+int nodesExpanded =0;
 
 Node newNode(int value, vector<Node> p){
     Node newNode;
@@ -341,12 +342,13 @@ Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int 
             Node RESULTSUCC;
             int NEWVALUE;
             for(Node SUCC : SUCCESSORS){
+                nodesExpanded++;
                 RESULTSUCC = MINIMAXAB(SUCC, depth+ 1, OPPOSITE(player), EV, -passThresh, -useThresh);
                 NEWVALUE = -1 * RESULTSUCC.value;
                 if(NEWVALUE > passThresh){
                     //we have found a successor that is better than any we have examined so far
                     passThresh = NEWVALUE;
-                    bestPath = RESULTSUCC.path; //TODO: set BEST-PATH to the result of attaching SUCC to the front of RESULT-SUCC.p.p
+                    bestPath = RESULTSUCC.path; //set BEST-PATH to the result of attaching SUCC to the front of RESULT-SUCC.p.p
                     bestPath.push_back(SUCC);
                 }
                 else{
@@ -428,13 +430,12 @@ int main(){
     Node currentNode = newNode(-10, p);
     while(!gameOver(currentNode))
     {
-        //btw i have no idea if this is how we're supposed to do it
         currentNode = MINIMAXAB(currentNode, depth, 1, eval1, useT1, passT1);
         printBoard(currentNode);
         currentNode = MINIMAXAB(currentNode, depth, 2, eval2, useT2, passT2);
         printBoard(currentNode);
         depth++;
     }
-    cout << "Game over! " << nodesGen << " nodes were generated." << endl;
+    cout << "Game over! " << nodesGen << " nodes were generated. " << nodesExpanded << " nodes were expanded." << endl;
     return 0;
 }
