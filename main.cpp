@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <vector>
 #include <chrono>
+#include <sys/resource.h>
 
 using namespace std;
 
@@ -579,6 +580,10 @@ int main() {
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> duration = end - start;
     cout << "Execution time: " << duration.count() << " seconds" << endl;
+    struct rusage usage;
+    getrusage(RUSAGE_SELF, &usage);
+    // Print memory usage in kilobytes
+    std::cout << "Memory usage: " << usage.ru_maxrss << " KB" << std::endl;
 
     return 0;
 }
