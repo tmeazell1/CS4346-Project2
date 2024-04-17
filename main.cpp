@@ -13,10 +13,6 @@ struct Node {
     int gameBoard[3][3];
 };
 
-// struct Path{
-
-// };
-
 // Prototype functions
 Node newNode(int value, vector<Node> p);
 bool DEEPENOUGH(Node position, int depth);
