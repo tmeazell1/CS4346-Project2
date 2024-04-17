@@ -534,12 +534,12 @@ int main() {
         useT1 = 4;
         break;
     case 2:
-        passT1 = -10;
-        useT1 = 10;
+        passT1 = -4;
+        useT1 = 4;
         break;
     case 3:
-        passT1 = -10;
-        useT1 = 10;
+        passT1 = -4;
+        useT1 = 4;
         break;
     case 4:
         passT1 = -10;
@@ -553,12 +553,12 @@ int main() {
         useT2 = 4;
         break;
     case 2:
-        passT2 = -10;
-        useT2 = 10;
+        passT2 = -4;
+        useT2 = 4;
         break;
     case 3:
-        passT2 = -10;
-        useT2 = 10;
+        passT2 = -4;
+        useT2 = 4;
         break;
     case 4:
         passT2 = -10;
