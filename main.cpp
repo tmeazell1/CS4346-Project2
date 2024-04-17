@@ -132,35 +132,7 @@ bool gameOver(Node n) {
     return isFilled;
 }
 
-//TODO: figure out what evaluation function means in the minimax algorithm.
-//We need 4 different EVs apparently lol
-/*
-    Potential evaluation function ideas: (from chatgpt lowk)
-    Center Control:
-        Assign a higher value if X controls the center of the board, and a lower value if O controls the center.
-        This function evaluates the importance of controlling the center as it provides more opportunities for creating winning combinations.
-        For example, if X occupies the center cell, the function could return a positive value; if O occupies the center, it could return a negative value.
-
-    Corner Control:
-        Assign values based on how many corners each player controls.
-        Corners are strategic positions in Tic-Tac-Toe as they give more control over the board.
-        You could give a higher value if X controls more corners and a lower value if O controls more corners.
-        For instance, if X occupies more corners than O, the function could return a positive value; if O controls more corners, it could return a negative value.
-
-    Potential Forks:
-        Evaluate potential fork opportunities for each player.
-        A fork is a situation where a player can win on their next move regardless of the opponent's move.
-        Look for configurations where placing a mark could potentially lead to two possible winning paths.
-        Assign a higher value if X has more potential forks and a lower value if O has more potential forks.
-        For instance, if X has more potential fork opportunities, the function could return a positive value; if O has more, it could return a negative value.
-
-    two Adjacent:
-        checks each row and column for when a player has 2 adjacent marks, aka there is about to be a win. +1 for player has two adjacentm,
-        -1 for opponent has two adjacent
-
-        */
 int EV1(Node position, int player) {
-    //TODO: implement the EV described in class
     int playerRows = 0;
     int oppositePlayerRows = 0;
 
@@ -358,9 +330,34 @@ int EV3(Node position, int player) {
 
     return playerForks - oppositePlayerForks;
 }
+
+//Crosshairs :
+//  Evaluates the potential control of the middle and side positions by each player.
+//  It assigns a higher value if the player occupies the middle position or any of the side positions, and a lower value if the opponent occupies these positions.
+//  For instance, if X has more control over the middle and side positions, the function could return a positive value; if O has more control, it could return a negative value.
 int EV4(Node position, int player) {
-    //TODO: implement another EV
-    return 1;
+    int playerCrosshair = 0;
+    int oppositePlayerCrosshair = 0;
+
+    // Middle
+    if (position.gameBoard[1][1] == player) {
+        playerCrosshair += 2;
+    }
+    else if (position.gameBoard[1][1] == OPPOSITE(player)) {
+        oppositePlayerCrosshair += 2;
+    }
+
+    // Sides
+    if (position.gameBoard[0][1] == player || position.gameBoard[1][0] == player ||
+        position.gameBoard[1][2] == player || position.gameBoard[2][1] == player) {
+        playerCrosshair++;
+    }
+    else if (position.gameBoard[0][1] == OPPOSITE(player) || position.gameBoard[1][0] == OPPOSITE(player) ||
+        position.gameBoard[1][2] == OPPOSITE(player) || position.gameBoard[2][1] == OPPOSITE(player)) {
+        oppositePlayerCrosshair++;
+    }
+
+    return playerCrosshair - oppositePlayerCrosshair;
 }
 
 int OPPOSITE(int player) {
@@ -527,7 +524,7 @@ int main() {
     vector<Node> p;
     int depth = 0;
     int passT1, passT2, useT1, useT2;
-    switch (eval1) //TODO: implement actual max and min values for each EV
+    switch (eval1)
     {
     case 1:
         passT1 = -4;
@@ -542,11 +539,11 @@ int main() {
         useT1 = 4;
         break;
     case 4:
-        passT1 = -10;
-        useT1 = 10;
+        passT1 = -4;
+        useT1 = 4;
         break;
     }
-    switch (eval2) //TODO: implement actual max and min values for each EV
+    switch (eval2)
     {
     case 1:
         passT2 = -4;
@@ -561,8 +558,8 @@ int main() {
         useT2 = 4;
         break;
     case 4:
-        passT2 = -10;
-        useT2 = 10;
+        passT2 = -4;
+        useT2 = 4;
         break;
     }
     Node currentNode = newNode(-10, p);
@@ -574,8 +571,10 @@ int main() {
         printBoard(currentNode);
         depth++;
     }
-    cout << "Game over! " << nodesGen << " nodes were generated. " << nodesExpanded << " nodes were expanded." << endl;
-    
+    cout << "Game over! " << endl;
+    cout << nodesGen << " nodes were generated. " << endl;
+    cout << nodesExpanded << " nodes were expanded." << endl;
+
     //end measure execution time
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> duration = end - start;
