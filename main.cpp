@@ -27,6 +27,7 @@ int EV1(Node position, int player);
 int EV2(Node position, int player);
 int EV3(Node position, int player);
 int EV4(Node position, int player);
+bool isFork(Node position, int player); //helper for EV3
 int OPPOSITE(int player);
 vector<Node> MOVEGEN(Node position, int player);
 Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int passThresh);
@@ -222,13 +223,140 @@ int EV1(Node position, int player) {
     // Return the difference
     return playerRows - oppositePlayerRows;
 }
+
+//Corner Control :
+//  Assign values based on how many corners each player controls.
+//  Corners are strategic positions in Tic - Tac - Toe as they give more control over the board.
+//  You could give a higher value if X controls more cornersand a lower value if O controls more corners.
+//  For instance, if X occupies more corners than O, the function could return a positive value; if O controls more corners, it could return a negative value.
 int EV2(Node position, int player) {
-    //TODO: implement another EV
-    return 1;
+    int playerCorners = 0;
+    int oppositePlayerCorners = 0;
+
+    if (position.gameBoard[0][0] == player)
+        playerCorners++;
+    else if (position.gameBoard[0][0] == OPPOSITE(player))
+        oppositePlayerCorners++;
+    if (position.gameBoard[2][0] == player)
+        playerCorners++;
+    else if (position.gameBoard[2][0] == OPPOSITE(player))
+        oppositePlayerCorners++;
+    if (position.gameBoard[0][2] == player)
+        playerCorners++;
+    else if (position.gameBoard[0][2] == OPPOSITE(player))
+        oppositePlayerCorners++;
+    if (position.gameBoard[2][2] == player)
+        playerCorners++;
+    else if (position.gameBoard[2][2] == OPPOSITE(player))
+        oppositePlayerCorners++;
+
+    return playerCorners - oppositePlayerCorners;
 }
+
+//helper function to check for forks in EV3
+bool isFork(Node position, int player) {
+    int count = 0;
+    //rows
+    for (int i = 0; i < 3; ++i) {
+        count = 0;
+        for (int j = 0; j < 3; ++j) {
+            if (position.gameBoard[i][j] == 0) {
+                count++;
+            }
+            else if (position.gameBoard[i][j] != player) {
+                count = -1;
+                break;
+            }
+        }
+        if (count == 2) {
+            return true;
+        }
+    }
+    //cols
+    for (int j = 0; j < 3; ++j) {
+        count = 0;
+        for (int i = 0; i < 3; ++i) {
+            if (position.gameBoard[i][j] == 0) {
+                count++;
+            }
+            else if (position.gameBoard[i][j] != player) {
+                count = -1;
+                break;
+            }
+        }
+        if (count == 2) {
+            return true;
+        }
+    }
+    //diag1
+    count = 0;
+    for (int i = 0; i < 3; ++i) {
+        if (position.gameBoard[i][i] == 0) {
+            count++;
+        }
+        else if (position.gameBoard[i][i] != player) {
+            count = -1;
+            break;
+        }
+    }
+    if (count == 2) {
+        return true;
+    }
+    //diag2
+    count = 0;
+    for (int i = 0; i < 3; ++i) {
+        if (position.gameBoard[i][2 - i] == 0) {
+            count++;
+        }
+        else if (position.gameBoard[i][2 - i] != player) {
+            count = -1;
+            break;
+        }
+    }
+    if (count == 2) {
+        return true;
+    }
+
+    return false;
+}
+
+//Potential Forks :
+//  Evaluate potential fork opportunities for each player.
+//  A fork is a situation where a player can win on their next move regardless of the opponent's move.
+//  Look for configurations where placing a mark could potentially lead to two possible winning paths.
+//  Assign a higher value if X has more potential forksand a lower value if O has more potential forks.
+//  For instance, if X has more potential fork opportunities, the function could return a positive value; if O has more, it could return a negative value.
 int EV3(Node position, int player) {
-    //TODO: implement another EV
-    return 1;
+    int playerForks = 0;
+    int oppositePlayerForks = 0;
+
+    //player
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (position.gameBoard[i][j] == 0) {
+                position.gameBoard[i][j] = player;
+                if (isFork(position, player)) {
+                    playerForks++;
+                }
+                position.gameBoard[i][j] = 0; // Reset the board
+            }
+        }
+    }
+
+    //oppositePlayer
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (position.gameBoard[i][j] == 0) {
+                position.gameBoard[i][j] = OPPOSITE(player);
+                if (isFork(position, OPPOSITE(player))) {
+                    oppositePlayerForks++;
+                }
+                position.gameBoard[i][j] = 0; // Reset the board
+            }
+        }
+    }
+
+    return playerForks - oppositePlayerForks;
 }
 int EV4(Node position, int player) {
     //TODO: implement another EV
