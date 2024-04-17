@@ -2,10 +2,11 @@
 #include <string>
 #include <cstdlib>
 #include <vector>
+#include <chrono>
 
 using namespace std;
 
-struct Node{
+struct Node {
     //node
     int value;
     vector<Node> path;
@@ -31,34 +32,34 @@ vector<Node> MOVEGEN(Node position, int player);
 Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int passThresh);
 
 //globals
-int nodesGen =0;
-int nodesExpanded =0;
+int nodesGen = 0;
+int nodesExpanded = 0;
 
-Node newNode(int value, vector<Node> p){
+Node newNode(int value, vector<Node> p) {
     Node newNode;
     newNode.value = value;
     newNode.path = p;
-    for (int i=0; i<3; i++){
-        for (int j =0; j<3; j++){
-            newNode.gameBoard[i][j]=0; //set the gameboard to be equal to all 0s
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            newNode.gameBoard[i][j] = 0; //set the gameboard to be equal to all 0s
         }
     }
     return newNode;
 }
 
-Node newNode(int value, vector<Node> p, int gb[3][3]){
+Node newNode(int value, vector<Node> p, int gb[3][3]) {
     Node newNode;
     newNode.value = value;
     newNode.path = p;
-    for (int i=0; i<3; i++){
-        for (int j =0; j<3; j++){
-            newNode.gameBoard[i][j]= gb[i][j]; //set the gameboard to be equal to gb
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            newNode.gameBoard[i][j] = gb[i][j]; //set the gameboard to be equal to gb
         }
     }
     return newNode;
 }
 
-bool DEEPENOUGH(Node position, int depth){
+bool DEEPENOUGH(Node position, int depth) {
     if (depth > 4)//each move is .5 depth, so 9 moves = 4.5, the game is over
         return true;
     else if (isWin(position, 1) || isWin(position, 2))
@@ -68,7 +69,7 @@ bool DEEPENOUGH(Node position, int depth){
 
 }
 
-bool isWin(Node position, int player){
+bool isWin(Node position, int player) {
     //return true if the node represents a winning position for that player
     // Check rows
     for (int i = 0; i < 3; ++i) {
@@ -87,21 +88,23 @@ bool isWin(Node position, int player){
         (position.gameBoard[0][2] == player && position.gameBoard[1][1] == player && position.gameBoard[2][0] == player)) {
         return true;
     }
-    
+
     return false; // If no win condition is met
 }
 
 
-void printBoard(Node n){ //simply prints the node's configuration
+void printBoard(Node n) { //simply prints the node's configuration
     std::cout << "|---|---|---|\n";
     for (int i = 0; i < 3; ++i) {
         std::cout << "| ";
         for (int j = 0; j < 3; ++j) {
             if (n.gameBoard[i][j] == 1) {
                 std::cout << "X | ";
-            } else if (n.gameBoard[i][j] == 2) {
+            }
+            else if (n.gameBoard[i][j] == 2) {
                 std::cout << "O | ";
-            } else {
+            }
+            else {
                 std::cout << "  | ";
             }
         }
@@ -111,14 +114,14 @@ void printBoard(Node n){ //simply prints the node's configuration
     cout << "\n\n";
 }
 
-bool gameOver(Node n){
+bool gameOver(Node n) {
     //return true if the game is over ie all nodes are filled
     //or if isWin(n, 1) or isWin(n, 2)
-    if (isWin(n,1) || isWin(n,2)){
+    if (isWin(n, 1) || isWin(n, 2)) {
         return true;
     }
     bool isFilled = true; //bool tracks if board is completely filled
-     for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
             if (n.gameBoard[i][j] == 0) {
                 isFilled = false;
@@ -153,9 +156,9 @@ bool gameOver(Node n){
     two Adjacent:
         checks each row and column for when a player has 2 adjacent marks, aka there is about to be a win. +1 for player has two adjacentm,
         -1 for opponent has two adjacent
-        
+
         */
-int EV1(Node position, int player){
+int EV1(Node position, int player) {
     //TODO: implement the EV described in class
     int playerRows = 0;
     int oppositePlayerRows = 0;
@@ -167,7 +170,8 @@ int EV1(Node position, int player){
         for (int j = 0; j < 3; ++j) {
             if (position.gameBoard[i][j] == player) {
                 oppositePlayerPossible = false;
-            } else if (position.gameBoard[i][j] != 0) {
+            }
+            else if (position.gameBoard[i][j] != 0) {
                 playerPossible = false;
             }
         }
@@ -182,7 +186,8 @@ int EV1(Node position, int player){
         for (int i = 0; i < 3; ++i) {
             if (position.gameBoard[i][j] == player) {
                 oppositePlayerPossible = false;
-            } else if (position.gameBoard[i][j] != 0) {
+            }
+            else if (position.gameBoard[i][j] != 0) {
                 playerPossible = false;
             }
         }
@@ -198,12 +203,14 @@ int EV1(Node position, int player){
     for (int i = 0; i < 3; ++i) {
         if (position.gameBoard[i][i] == player) {
             oppositePlayerDiagonalPossible1 = false;
-        } else if (position.gameBoard[i][i] != 0) {
+        }
+        else if (position.gameBoard[i][i] != 0) {
             playerDiagonalPossible1 = false;
         }
         if (position.gameBoard[i][2 - i] == player) {
             oppositePlayerDiagonalPossible2 = false;
-        } else if (position.gameBoard[i][2 - i] != 0) {
+        }
+        else if (position.gameBoard[i][2 - i] != 0) {
             playerDiagonalPossible2 = false;
         }
     }
@@ -215,20 +222,20 @@ int EV1(Node position, int player){
     // Return the difference
     return playerRows - oppositePlayerRows;
 }
-int EV2(Node position, int player){
+int EV2(Node position, int player) {
     //TODO: implement another EV
     return 1;
 }
-int EV3(Node position, int player){
+int EV3(Node position, int player) {
     //TODO: implement another EV
     return 1;
 }
-int EV4(Node position, int player){
+int EV4(Node position, int player) {
     //TODO: implement another EV
     return 1;
 }
 
-int OPPOSITE(int player){
+int OPPOSITE(int player) {
     //return opposite player
     if (player == 1)
         return 2;
@@ -255,41 +262,41 @@ vector<Node> MOVEGEN(Node position, int player)
     return successors;
 }
 
-Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int passThresh){
-    if (DEEPENOUGH(position, depth)){ 
+Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int passThresh) {
+    if (DEEPENOUGH(position, depth)) {
         //then return the structure
         vector<Node> path;
         path.push_back(position);
-        switch(EV){
+        switch (EV) {
         case 1:
         {
-        Node n = newNode(EV1(position, player), path, position.gameBoard);
-        return n;
-        break;
+            Node n = newNode(EV1(position, player), path, position.gameBoard);
+            return n;
+            break;
         }
         case 2:
         {
-        Node n = newNode(EV2(position, player), path, position.gameBoard);
-        return n;
-        break;
+            Node n = newNode(EV2(position, player), path, position.gameBoard);
+            return n;
+            break;
         }
         case 3:
         {
-        Node n = newNode(EV3(position, player), path, position.gameBoard);
-        return n;
-        break;
+            Node n = newNode(EV3(position, player), path, position.gameBoard);
+            return n;
+            break;
         }
         case 4:
         {
-        Node n = newNode(EV4(position, player), path, position.gameBoard);
-        return n;
-        break;
+            Node n = newNode(EV4(position, player), path, position.gameBoard);
+            return n;
+            break;
         }
         default:
         {
-        Node n = newNode(EV1(position, player), path, position.gameBoard);
-        return n;
-        break;
+            Node n = newNode(EV1(position, player), path, position.gameBoard);
+            return n;
+            break;
         }
         }
     }
@@ -298,60 +305,60 @@ Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int 
         //generate one more ply of the tree
         vector<Node> SUCCESSORS = MOVEGEN(position, player);
         vector<Node> bestPath;
-        if(SUCCESSORS.empty())
+        if (SUCCESSORS.empty())
         {
             //there are no moves to be made
             //return the same structure that would have been returned if DEEP-ENOUGH had returned TRUE.
             vector<Node> path;
             path.push_back(position);
-            switch(EV){
+            switch (EV) {
             case 1:
             {
-            Node n = newNode(EV1(position, player), path, position.gameBoard);
-            return n;
-            break;
+                Node n = newNode(EV1(position, player), path, position.gameBoard);
+                return n;
+                break;
             }
             case 2:
             {
-            Node n = newNode(EV2(position, player), path, position.gameBoard);
-            return n;
-            break;
+                Node n = newNode(EV2(position, player), path, position.gameBoard);
+                return n;
+                break;
             }
             case 3:
             {
-            Node n = newNode(EV3(position, player), path, position.gameBoard);
-            return n;
-            break;
+                Node n = newNode(EV3(position, player), path, position.gameBoard);
+                return n;
+                break;
             }
             case 4:
             {
-            Node n = newNode(EV4(position, player), path, position.gameBoard);
-            return n;
-            break;
+                Node n = newNode(EV4(position, player), path, position.gameBoard);
+                return n;
+                break;
             }
             default:
             {
-            Node n = newNode(EV1(position, player), path, position.gameBoard);
-            return n;
-            break;
+                Node n = newNode(EV1(position, player), path, position.gameBoard);
+                return n;
+                break;
             }
             }
         }
-        else{
+        else {
             //go through each element
             Node RESULTSUCC;
             int NEWVALUE;
-            for(Node SUCC : SUCCESSORS){
+            for (Node SUCC : SUCCESSORS) {
                 nodesExpanded++;
-                RESULTSUCC = MINIMAXAB(SUCC, depth+ 1, OPPOSITE(player), EV, -passThresh, -useThresh);
+                RESULTSUCC = MINIMAXAB(SUCC, depth + 1, OPPOSITE(player), EV, -passThresh, -useThresh);
                 NEWVALUE = -1 * RESULTSUCC.value;
-                if(NEWVALUE > passThresh){
+                if (NEWVALUE > passThresh) {
                     //we have found a successor that is better than any we have examined so far
                     passThresh = NEWVALUE;
                     bestPath = RESULTSUCC.path; //set BEST-PATH to the result of attaching SUCC to the front of RESULT-SUCC.p.p
                     bestPath.push_back(SUCC);
                 }
-                else{
+                else {
                     //we should stop examining this branch. But both thresholds and
                     //values have been inverted. So, if Pass-Thresh>= Use Thresh, then return
                     //immediately with the value
@@ -365,7 +372,10 @@ Node MINIMAXAB(Node position, int depth, int player, int EV, int useThresh, int 
     }
 }
 
-int main(){
+int main() {
+    //start measure execution time
+    auto start = chrono::high_resolution_clock::now();
+
     //lets represent x as player 1
     //and represent O as player 2
     int eval1;
@@ -377,7 +387,7 @@ int main(){
     cin >> eval2;
     cout << "\n" << endl;
 
-    if(eval1 < 1 || eval1 > 4 || eval2 < 1 || eval2 >4)
+    if (eval1 < 1 || eval1 > 4 || eval2 < 1 || eval2 >4)
     {
         cout << "Invalid evaluation functions" << endl;
         return 0;
@@ -387,48 +397,48 @@ int main(){
 
 
     vector<Node> p;
-    int depth =0;
+    int depth = 0;
     int passT1, passT2, useT1, useT2;
-    switch(eval1) //TODO: implement actual max and min values for each EV
+    switch (eval1) //TODO: implement actual max and min values for each EV
     {
-        case 1:
-        passT1= -4;
-        useT1=4;
+    case 1:
+        passT1 = -4;
+        useT1 = 4;
         break;
-        case 2:
-        passT1= -10;
-        useT1=10;
+    case 2:
+        passT1 = -10;
+        useT1 = 10;
         break;
-        case 3:
-        passT1= -10;
-        useT1=10;
+    case 3:
+        passT1 = -10;
+        useT1 = 10;
         break;
-        case 4:
-        passT1= -10;
-        useT1=10;
+    case 4:
+        passT1 = -10;
+        useT1 = 10;
         break;
     }
-    switch(eval2) //TODO: implement actual max and min values for each EV
+    switch (eval2) //TODO: implement actual max and min values for each EV
     {
-        case 1:
-        passT2= -4;
-        useT2=4;
+    case 1:
+        passT2 = -4;
+        useT2 = 4;
         break;
-        case 2:
-        passT2= -10;
-        useT2=10;
+    case 2:
+        passT2 = -10;
+        useT2 = 10;
         break;
-        case 3:
-        passT2= -10;
-        useT2=10;
+    case 3:
+        passT2 = -10;
+        useT2 = 10;
         break;
-        case 4:
-        passT2= -10;
-        useT2=10;
+    case 4:
+        passT2 = -10;
+        useT2 = 10;
         break;
     }
     Node currentNode = newNode(-10, p);
-    while(!gameOver(currentNode))
+    while (!gameOver(currentNode))
     {
         currentNode = MINIMAXAB(currentNode, depth, 1, eval1, useT1, passT1);
         printBoard(currentNode);
@@ -437,5 +447,11 @@ int main(){
         depth++;
     }
     cout << "Game over! " << nodesGen << " nodes were generated. " << nodesExpanded << " nodes were expanded." << endl;
+    
+    //end measure execution time
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = end - start;
+    cout << "Execution time: " << duration.count() << " seconds" << endl;
+
     return 0;
 }
